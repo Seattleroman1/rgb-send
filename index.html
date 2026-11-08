@@ -20,18 +20,18 @@ pre{white-space:pre-wrap;word-break:break-word;background:#fff;border:1px solid 
 <script>
 (function(){
   /* #k=sms|mail&s=subject&b=body  (all in the fragment, never sent to the server) */
-  var h=new URLSearchParams(location.hash.slice(1)), k=h.get('k')||'mail', s=h.get('s')||'', b=h.get('b')||'', e=encodeURIComponent;
+  var h=new URLSearchParams(location.hash.slice(1)), k=h.get('k')||'mail', s=h.get('s')||'', b=h.get('b')||'', to=(h.get('t')||'').replace(/[^\w.@+-]/g,''), e=encodeURIComponent;
   var iOS=/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
   var phone=/Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
   document.getElementById('m').textContent=b;
   var sms='sms:'+(iOS?'&':'?')+'body='+e(b);
-  var mailto='mailto:?subject='+e(s)+'&body='+e(b).replace(/%0A/g,'%0D%0A');
-  var gmail='https://mail.google.com/mail/?view=cm&fs=1&su='+e(s)+'&body='+e(b);
+  var mailto='mailto:'+to+'?subject='+e(s)+'&body='+e(b).replace(/%0A/g,'%0D%0A');
+  var gmail='https://mail.google.com/mail/?view=cm&fs=1'+(to?'&to='+e(to):'')+'&su='+e(s)+'&body='+e(b);
   var B=document.getElementById('btns'), main;
   function btn(cls,href,txt){ var a=document.createElement('a'); a.className='go '+cls; a.href=href; a.textContent=txt; B.appendChild(a); return a; }
   if(k==='sms'){ document.getElementById('h').textContent='Send by text'; document.getElementById('s').textContent='Tap the button, pick the client, press Send.';
     main=btn('t',sms,'💬  Open Messages'); }
-  else { document.getElementById('h').textContent='Send by email'; document.getElementById('s').textContent='Tap the button, add the client’s email, press Send.';
+  else { document.getElementById('h').textContent='Send by email'; document.getElementById('s').textContent=to?'Tap the button and press Send (to '+to+').':'Tap the button, add the client’s email, press Send.';
     main=btn('e',phone?mailto:gmail,'✉️  Open email'); btn('g',phone?gmail:mailto,phone?'Use Gmail in the browser instead':'Use my computer’s email app instead'); }
   /* try once on arrival; if the phone needs a tap, the big button is right there */
   setTimeout(function(){ try{ location.href=main.href; }catch(x){} },150);
